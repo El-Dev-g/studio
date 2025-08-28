@@ -1,16 +1,27 @@
-import { redirect } from 'next/navigation';
+"use client";
 
-// This is a simulated authentication check.
-// In a real application, you'd check for a valid session or token.
-const isAuthenticated = true;
+import { redirect } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
+import { ReactNode } from 'react';
+import { LoaderCircle } from 'lucide-react';
 
 export default function ProtectedLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
-  if (!isAuthenticated) {
-    redirect('/signup');
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return redirect('/login');
   }
 
   return <>{children}</>;

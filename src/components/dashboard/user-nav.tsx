@@ -15,18 +15,24 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { CreditCard, LifeBuoy, LogOut, Settings, User } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
 
 const DEFAULT_AVATAR = "https://picsum.photos/id/237/40/40";
 
 export function UserNav() {
   const [avatarUrl, setAvatarUrl] = useState(DEFAULT_AVATAR);
+  const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     // We use a simple event listener to update the avatar in real-time
     // if it's changed on the settings page.
     const handleAvatarChange = () => {
       const storedAvatar = localStorage.getItem("user-avatar");
-      setAvatarUrl(storedAvatar || DEFAULT_AVATAR);
+      setAvatarUrl(storedAvatar || user?.photoURL || DEFAULT_AVATAR);
     };
 
     // Initial load
@@ -37,7 +43,12 @@ export function UserNav() {
     return () => {
       window.removeEventListener("storage", handleAvatarChange);
     };
-  }, []);
+  }, [user]);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push('/login');
+  };
 
   return (
     <DropdownMenu>
@@ -45,16 +56,16 @@ export function UserNav() {
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
             <AvatarImage src={avatarUrl} alt="User avatar" data-ai-hint="person avatar" />
-            <AvatarFallback>U</AvatarFallback>
+            <AvatarFallback>{user?.email?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">User</p>
+            <p className="text-sm font-medium leading-none">{user?.displayName || "User"}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              user@example.com
+              {user?.email}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -74,8 +85,8 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/"><LogOut className="mr-2 h-4 w-4" /><span>Log out</span></Link>
+        <DropdownMenuItem onClick={handleLogout}>
+          <LogOut className="mr-2 h-4 w-4" /><span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -8,34 +8,59 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/hooks/use-auth";
+import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
+import { LoaderCircle } from "lucide-react";
 
 const DEFAULT_AVATAR = "https://picsum.photos/id/237/40/40";
 
 export default function SettingsPage() {
     const { toast } = useToast();
+    const { user } = useAuth();
     const [avatarUrl, setAvatarUrl] = useState(DEFAULT_AVATAR);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [isPasswordLoading, setIsPasswordLoading] = useState(false);
 
     useEffect(() => {
-        const storedAvatar = localStorage.getItem("user-avatar");
-        if (storedAvatar) {
-            setAvatarUrl(storedAvatar);
+        if(user) {
+            setAvatarUrl(user.photoURL || DEFAULT_AVATAR);
+            setName(user.displayName || '');
+            setEmail(user.email || '');
         }
-    }, []);
+    }, [user]);
 
-    const handleProfileSave = (e: React.FormEvent) => {
+    const handleProfileSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        toast({
-            title: "Success!",
-            description: "Your profile has been updated.",
-        });
+        if (!user) return;
+        setIsLoading(true);
+        try {
+            await updateProfile(user, { displayName: name });
+            // In a real app, you would also need to handle email updates
+            // which often require verification.
+            toast({
+                title: "Success!",
+                description: "Your profile has been updated.",
+            });
+        } catch (error: any) {
+             toast({ variant: "destructive", title: "Error", description: error.message });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const handlePasswordUpdate = (e: React.FormEvent) => {
+    const handlePasswordUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!user || !user.email) return;
+
+        setIsPasswordLoading(true);
+
         const formData = new FormData(e.target as HTMLFormElement);
-        const newPassword = formData.get("new-password");
-        const confirmPassword = formData.get("confirm-password");
+        const currentPassword = formData.get("current-password") as string;
+        const newPassword = formData.get("new-password") as string;
+        const confirmPassword = formData.get("confirm-password") as string;
 
         if (newPassword !== confirmPassword) {
             toast({
@@ -43,14 +68,29 @@ export default function SettingsPage() {
                 title: "Error",
                 description: "New passwords do not match.",
             });
+            setIsPasswordLoading(false);
             return;
         }
 
-        toast({
-            title: "Success!",
-            description: "Your password has been updated.",
-        });
-        (e.target as HTMLFormElement).reset();
+        try {
+            const credential = EmailAuthProvider.credential(user.email, currentPassword);
+            // Re-authenticate the user before changing the password
+            await reauthenticateWithCredential(user, credential);
+            await updatePassword(user, newPassword);
+            toast({
+                title: "Success!",
+                description: "Your password has been updated.",
+            });
+            (e.target as HTMLFormElement).reset();
+        } catch (error: any) {
+             toast({
+                variant: "destructive",
+                title: "Error updating password",
+                description: error.code === 'auth/wrong-password' ? 'Incorrect current password.' : error.message,
+            });
+        } finally {
+            setIsPasswordLoading(false);
+        }
     };
 
     const handleAvatarUpload = () => {
@@ -60,14 +100,12 @@ export default function SettingsPage() {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            // In a real app, you'd upload the file and get a URL.
-            // Here, we'll simulate it by using a new placeholder.
-            const newAvatarUrl = `https://picsum.photos/seed/${Math.random()}/40/40`;
+            // In a real app, you'd upload the file and get a URL, then call `updateProfile`.
+            const newAvatarUrl = URL.createObjectURL(file);
             setAvatarUrl(newAvatarUrl);
-            localStorage.setItem("user-avatar", newAvatarUrl);
-            toast({
-                title: "Profile picture updated!",
-                description: "Your new photo is now visible.",
+             toast({
+                title: "Avatar updated",
+                description: "Click 'Save Changes' to apply your new profile picture.",
             });
         }
     };
@@ -88,7 +126,7 @@ export default function SettingsPage() {
                 <CardContent className="flex items-center gap-6">
                      <Avatar className="h-20 w-20">
                         <AvatarImage src={avatarUrl} alt="User avatar" data-ai-hint="person avatar" />
-                        <AvatarFallback>U</AvatarFallback>
+                        <AvatarFallback>{name?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
                     </Avatar>
                     <div className="grid gap-2">
                         <Button onClick={handleAvatarUpload}>Change Photo</Button>
@@ -114,20 +152,23 @@ export default function SettingsPage() {
                          <div className="flex items-center gap-4">
                             <Avatar className="h-10 w-10">
                                 <AvatarImage src={avatarUrl} alt="User avatar" data-ai-hint="person avatar" />
-                                <AvatarFallback>U</AvatarFallback>
+                                <AvatarFallback>{name?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
                             </Avatar>
                             <div className="space-y-2 flex-grow">
                                 <Label htmlFor="name">Full Name</Label>
-                                <Input id="name" name="name" defaultValue="Current User" />
+                                <Input id="name" name="name" value={name} onChange={e => setName(e.target.value)} />
                             </div>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
-                            <Input id="email" name="email" type="email" defaultValue="user@example.com" readOnly />
+                            <Input id="email" name="email" type="email" value={email} readOnly />
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button type="submit">Save Changes</Button>
+                        <Button type="submit" disabled={isLoading}>
+                            {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                            Save Changes
+                        </Button>
                     </CardFooter>
                 </form>
             </Card>
@@ -153,7 +194,10 @@ export default function SettingsPage() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button type="submit">Update Password</Button>
+                        <Button type="submit" disabled={isPasswordLoading}>
+                            {isPasswordLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                            Update Password
+                        </Button>
                     </CardFooter>
                 </form>
             </Card>

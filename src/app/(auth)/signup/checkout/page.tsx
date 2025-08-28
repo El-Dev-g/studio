@@ -12,12 +12,14 @@ import { useSearchParams } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle, ShoppingCart } from "lucide-react";
+import { CheckCircle, LoaderCircle, ShoppingCart } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { DomainSuggester } from "@/components/domain-suggester";
 import { useRouter } from "next/navigation";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const plans = {
     shared: { name: "Shared Hosting", price: 9, description: "For personal sites & blogs" },
@@ -39,6 +41,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const initialPlanId = searchParams.get('plan') as PlanId || 'cloud';
   const initialDomain = searchParams.get('domain');
+  const { toast } = useToast();
 
   const [selectedPlanId, setSelectedPlanId] = useState<PlanId>(initialPlanId);
   const selectedPlan = useMemo(() => ({ ...plans[selectedPlanId], id: selectedPlanId }), [selectedPlanId]);
@@ -46,11 +49,14 @@ export default function CheckoutPage() {
   const [domain, setDomain] = useState<string | null>(initialDomain);
   const [domainPrice, setDomainPrice] = useState(initialDomain ? 15 : 0);
   const [selectedAddons, setSelectedAddons] = useState<typeof addons[0][]>([]);
+  
+  // Form state
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-
-  const { toast } = useToast();
 
   useEffect(() => {
     const planIdFromUrl = searchParams.get('plan') as PlanId;
@@ -99,6 +105,25 @@ export default function CheckoutPage() {
         value = value.slice(0, 2) + '/' + value.slice(2);
     }
     setExpiry(value);
+  };
+
+  const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      setIsLoading(true);
+      try {
+          // In a real app, you would process payment first via Stripe/etc.
+          // Then, on successful payment, create the user.
+          await createUserWithEmailAndPassword(auth, email, password);
+          router.push('/signup/verify-email');
+      } catch (error: any) {
+          toast({
+              variant: "destructive",
+              title: "Signup Failed",
+              description: error.message,
+          });
+      } finally {
+          setIsLoading(false);
+      }
   };
 
 
@@ -201,7 +226,7 @@ export default function CheckoutPage() {
             <div className="space-y-8">
                  <div>
                      <h2 className="text-xl font-semibold mb-4">4. Account & Payment</h2>
-                    <form onSubmit={(e) => { e.preventDefault(); router.push('/signup/verify-email'); }}>
+                    <form onSubmit={handleSignup}>
                         <Card>
                             <CardHeader>
                                 <CardTitle>Create your account</CardTitle>
@@ -213,11 +238,11 @@ export default function CheckoutPage() {
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" placeholder="m@example.com" required />
+                                    <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={e => setEmail(e.target.value)} />
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="password">Password</Label>
-                                    <Input id="password" type="password" required />
+                                    <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} />
                                 </div>
                             </CardContent>
                             <Separator />
@@ -283,7 +308,8 @@ export default function CheckoutPage() {
                                 </div>
                             </CardContent>
                             <CardFooter className="flex-col items-stretch gap-4">
-                                <Button type="submit" className="w-full">
+                                <Button type="submit" className="w-full" disabled={isLoading}>
+                                    {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
                                     Complete Purchase
                                 </Button>
                                 <div className="text-sm text-muted-foreground text-center">

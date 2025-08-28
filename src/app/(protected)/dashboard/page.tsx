@@ -1,14 +1,18 @@
 
 
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Globe, Server, CreditCard, ShieldCheck } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function DashboardPage() {
+  const { user } = useAuth();
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between space-y-2">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Welcome back, User</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user?.displayName || user?.email}</h1>
           <p className="text-muted-foreground">Here's a quick overview of your account.</p>
         </div>
       </div>
