@@ -10,31 +10,42 @@ import { Logo } from "@/components/logo";
 import { useSearchParams } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 const plans = {
-    shared: { name: "Shared Hosting", price: "$9/month", yearlyPrice: "$99/year" },
-    cloud: { name: "Cloud Hosting", price: "$29/month", yearlyPrice: "$299/year" },
-    vps: { name: "VPS Hosting", price: "$59/month", yearlyPrice: "$599/year" },
+    shared: { name: "Shared Hosting", price: 9 },
+    cloud: { name: "Cloud Hosting", price: 29 },
+    vps: { name: "VPS Hosting", price: 59 },
 };
+
+const addons = [
+    { id: "ddos", name: "Enhanced DDoS Protection", description: "Advanced, always-on protection against network attacks.", price: 5 },
+    { id: "backups", name: "Daily Cloud Backups", description: "Peace of mind with automated daily off-site backups.", price: 3 },
+];
+
 
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
   const planId = searchParams.get('plan') as keyof typeof plans || 'cloud';
-  const selectedPlan = plans[planId];
+  const selectedPlan = { ...plans[planId], id: planId };
+  
   const [domain, setDomain] = useState<string | null>(null);
+  const [domainPrice, setDomainPrice] = useState(0);
   const [searchedDomain, setSearchedDomain] = useState('');
+  const [selectedAddons, setSelectedAddons] = useState<typeof addons[0][]>([]);
+
   const { toast } = useToast();
 
   const handleDomainSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if(!searchedDomain) return;
 
-    // Simulate domain availability check
     if(searchedDomain.includes('.')) {
         setDomain(searchedDomain);
+        setDomainPrice(15); // Simulate registration fee
         toast({ title: "Success!", description: `${searchedDomain} is available.` });
     } else {
         toast({ variant: "destructive", title: "Invalid Domain", description: "Please enter a valid domain name." });
@@ -46,11 +57,27 @@ export default function CheckoutPage() {
     const existingDomain = formData.get("existingDomain") as string;
     if(existingDomain && existingDomain.includes('.')) {
         setDomain(existingDomain);
+        setDomainPrice(0); // No charge for using existing
         toast({ title: "Domain Added", description: `You will be prompted to update nameservers for ${existingDomain} after setup.` });
     } else {
         toast({ variant: "destructive", title: "Invalid Domain", description: "Please enter a valid domain name." });
     }
   }
+
+  const handleAddonToggle = (addon: typeof addons[0]) => {
+    setSelectedAddons(prev => 
+        prev.some(a => a.id === addon.id) 
+            ? prev.filter(a => a.id !== addon.id)
+            : [...prev, addon]
+    );
+  }
+  
+  const total = useMemo(() => {
+    const planPrice = selectedPlan.price;
+    const addonsPrice = selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
+    return planPrice + domainPrice + addonsPrice;
+  }, [selectedPlan, domainPrice, selectedAddons]);
+
 
   return (
     <div className="w-full max-w-6xl">
@@ -69,7 +96,7 @@ export default function CheckoutPage() {
                             <CardDescription>Billed monthly. You can cancel anytime.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-4xl font-bold">{selectedPlan.price}</p>
+                            <p className="text-4xl font-bold">${selectedPlan.price}/month</p>
                         </CardContent>
                     </Card>
                  </div>
@@ -102,10 +129,31 @@ export default function CheckoutPage() {
                         </CardContent>
                     </Card>
                  </div>
+                 <div>
+                    <h2 className="text-xl font-semibold mb-4">3. Recommended Addons</h2>
+                    <Card>
+                        <CardContent className="pt-6 space-y-4">
+                            {addons.map(addon => (
+                                <div key={addon.id} className="flex items-start p-4 border rounded-lg has-[:checked]:border-primary has-[:checked]:bg-secondary">
+                                    <Checkbox 
+                                        id={addon.id} 
+                                        className="mt-1"
+                                        onCheckedChange={() => handleAddonToggle(addon)}
+                                    />
+                                    <div className="ml-4 flex-grow">
+                                        <Label htmlFor={addon.id} className="font-semibold text-base">{addon.name}</Label>
+                                        <p className="text-muted-foreground text-sm">{addon.description}</p>
+                                    </div>
+                                    <p className="font-semibold whitespace-nowrap ml-4">${addon.price.toFixed(2)}/mo</p>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
             <div className="space-y-8">
                  <div>
-                     <h2 className="text-xl font-semibold mb-4">3. Account & Payment</h2>
+                     <h2 className="text-xl font-semibold mb-4">4. Account & Payment</h2>
                     <Card>
                         <CardHeader>
                             <CardTitle>Create your account</CardTitle>
@@ -131,18 +179,24 @@ export default function CheckoutPage() {
                         <CardContent className="space-y-4">
                            <div className="flex justify-between">
                                <span>{selectedPlan.name} (Monthly)</span>
-                               <span>{selectedPlan.price.replace('/month','')}</span>
+                               <span>${selectedPlan.price.toFixed(2)}</span>
                            </div>
                            {domain && (
-                            <div className="flex justify-between font-medium text-primary">
+                            <div className="flex justify-between">
                                <span>Domain: {domain}</span>
-                               <span>$15.00</span>
+                               <span>${domainPrice.toFixed(2)}</span>
                            </div>
                            )}
+                           {selectedAddons.map(addon => (
+                               <div key={addon.id} className="flex justify-between">
+                                   <span>{addon.name}</span>
+                                   <span>${addon.price.toFixed(2)}</span>
+                               </div>
+                           ))}
                            <Separator />
                            <div className="flex justify-between font-bold text-lg">
                                <span>Total Due Today</span>
-                               <span>{domain ? `$${29 + 15}.00` : selectedPlan.price.replace('/month','')}</span>
+                               <span>${total.toFixed(2)}</span>
                            </div>
                         </CardContent>
                         <Separator />
