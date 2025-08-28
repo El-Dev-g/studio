@@ -44,6 +44,9 @@ export default function CheckoutPage() {
   const [domain, setDomain] = useState<string | null>(initialDomain);
   const [domainPrice, setDomainPrice] = useState(initialDomain ? 15 : 0);
   const [selectedAddons, setSelectedAddons] = useState<typeof addons[0][]>([]);
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiry, setExpiry] = useState('');
+
 
   const { toast } = useToast();
 
@@ -78,6 +81,23 @@ export default function CheckoutPage() {
     const addonsPrice = selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
     return planPrice + domainPrice + addonsPrice;
   }, [selectedPlan, domainPrice, selectedAddons]);
+
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/\s/g, '');
+    if (isNaN(Number(rawValue))) {
+        return;
+    }
+    const formattedValue = rawValue.match(/.{1,4}/g)?.join(' ') || '';
+    setCardNumber(formattedValue);
+  };
+  
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+    if (value.length > 2) {
+        value = value.slice(0, 2) + '/' + value.slice(2);
+    }
+    setExpiry(value);
+  };
 
 
   return (
@@ -232,12 +252,24 @@ export default function CheckoutPage() {
                         <CardContent className="grid gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="card-number">Card Number</Label>
-                                <Input id="card-number" placeholder="**** **** **** 1234" maxLength={19} />
+                                <Input 
+                                    id="card-number" 
+                                    placeholder="**** **** **** 1234" 
+                                    maxLength={19} 
+                                    value={cardNumber}
+                                    onChange={handleCardNumberChange}
+                                />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="expiry">Expiry</Label>
-                                    <Input id="expiry" placeholder="MM/YY" maxLength={5} />
+                                    <Input 
+                                        id="expiry" 
+                                        placeholder="MM/YY" 
+                                        maxLength={5} 
+                                        value={expiry}
+                                        onChange={handleExpiryChange}
+                                    />
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="cvc">CVC</Label>
