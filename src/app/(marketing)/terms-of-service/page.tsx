@@ -62,6 +62,9 @@ export default function TermsOfServicePage() {
           <Link href="/privacy-policy" className="text-xs hover:underline underline-offset-4">
             Privacy
           </Link>
+           <Link href="/status" className="text-xs hover:underline underline-offset-4">
+            Status
+          </Link>
         </nav>
       </footer>
     </div>
