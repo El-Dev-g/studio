@@ -1,5 +1,7 @@
+
 "use client";
 
+import React, { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,13 +16,35 @@ import {
 import Link from "next/link";
 import { CreditCard, LifeBuoy, LogOut, Settings, User } from "lucide-react";
 
+const DEFAULT_AVATAR = "https://picsum.photos/id/237/40/40";
+
 export function UserNav() {
+  const [avatarUrl, setAvatarUrl] = useState(DEFAULT_AVATAR);
+
+  useEffect(() => {
+    // We use a simple event listener to update the avatar in real-time
+    // if it's changed on the settings page.
+    const handleAvatarChange = () => {
+      const storedAvatar = localStorage.getItem("user-avatar");
+      setAvatarUrl(storedAvatar || DEFAULT_AVATAR);
+    };
+
+    // Initial load
+    handleAvatarChange();
+
+    window.addEventListener("storage", handleAvatarChange);
+
+    return () => {
+      window.removeEventListener("storage", handleAvatarChange);
+    };
+  }, []);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src="https://picsum.photos/40/40" alt="User avatar" data-ai-hint="person avatar" />
+            <AvatarImage src={avatarUrl} alt="User avatar" data-ai-hint="person avatar" />
             <AvatarFallback>U</AvatarFallback>
           </Avatar>
         </Button>
