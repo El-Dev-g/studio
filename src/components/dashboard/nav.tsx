@@ -8,10 +8,11 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { CreditCard, Globe, LayoutDashboard, LifeBuoy, Settings as SettingsIcon, Folder, Mail, Lock, BookOpen, Shield } from "lucide-react";
+import { CreditCard, Globe, LayoutDashboard, LifeBuoy, Settings as SettingsIcon, Folder, Mail, Lock, BookOpen, Shield, AppWindow } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/dashboard/apps", icon: AppWindow, label: "App Marketplace" },
   { href: "/dashboard/domains", icon: Globe, label: "Domains" },
   { href: "/dashboard/files", icon: Folder, label: "File Management" },
   { href: "/dashboard/email", icon: Mail, label: "Email Management" },
