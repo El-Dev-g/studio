@@ -17,6 +17,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { DomainSuggester } from "@/components/domain-suggester";
+import { useRouter } from "next/navigation";
 
 const plans = {
     shared: { name: "Shared Hosting", price: 9, description: "For personal sites & blogs" },
@@ -35,6 +36,7 @@ type PlanId = keyof typeof plans;
 
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const initialPlanId = searchParams.get('plan') as PlanId || 'cloud';
   const initialDomain = searchParams.get('domain');
 
@@ -285,7 +287,7 @@ export default function CheckoutPage() {
                                     Complete Purchase
                                 </Button>
                                 <div className="text-sm text-muted-foreground text-center">
-                                    By clicking "Complete Purchase", you agree to our <Link href="#" className="underline">Terms of Service</Link> and <Link href="#" className="underline">Privacy Policy</Link>.
+                                    By clicking "Complete Purchase", you agree to our <Link href="/terms-of-service" className="underline">Terms of Service</Link> and <Link href="/privacy-policy" className="underline">Privacy Policy</Link>.
                                 </div>
                                 <p className="text-center text-sm text-muted-foreground pt-4 border-t w-full">
                                     Already have an account? <Link href="/login" className="underline">Login</Link>
