@@ -130,7 +130,28 @@ export default function CheckoutPage() {
                             </CardContent>
                         </Card>
                     ) : (
-                        <DomainSuggester onDomainSelect={handleDomainSelect} />
+                         <Tabs defaultValue="new">
+                            <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger value="new">Register a new domain</TabsTrigger>
+                                <TabsTrigger value="existing">Use an existing domain</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="new">
+                                <DomainSuggester onDomainSelect={handleDomainSelect} />
+                            </TabsContent>
+                            <TabsContent value="existing">
+                                <Card>
+                                    <CardContent className="pt-6">
+                                        <p className="text-sm text-muted-foreground mb-4">
+                                            Enter the domain you already own. You will need to update its nameservers later.
+                                        </p>
+                                        <div className="flex gap-2">
+                                            <Input placeholder="your-domain.com" className="flex-grow" />
+                                            <Button>Add Domain</Button>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+                         </Tabs>
                     )}
                  </div>
                  <div>
