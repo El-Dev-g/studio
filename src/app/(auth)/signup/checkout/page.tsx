@@ -199,96 +199,100 @@ export default function CheckoutPage() {
             <div className="space-y-8">
                  <div>
                      <h2 className="text-xl font-semibold mb-4">4. Account & Payment</h2>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Create your account</CardTitle>
-                        </CardHeader>
-                        <CardContent className="grid gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="full-name">Full name</Label>
-                                <Input id="full-name" placeholder="John Doe" required />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input id="email" type="email" placeholder="m@example.com" required />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
-                                <Input id="password" type="password" required />
-                            </div>
-                        </CardContent>
-                        <Separator />
-                        <CardHeader>
-                            <CardTitle>Order Summary</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                           <div className="flex justify-between">
-                               <span>{selectedPlan.name} (Monthly)</span>
-                               <span>${selectedPlan.price.toFixed(2)}</span>
-                           </div>
-                           {domain && (
-                            <div className="flex justify-between">
-                               <span>Domain: {domain}</span>
-                               <span>${domainPrice.toFixed(2)}</span>
-                           </div>
-                           )}
-                           {selectedAddons.map(addon => (
-                               <div key={addon.id} className="flex justify-between">
-                                   <span>{addon.name}</span>
-                                   <span>${addon.price.toFixed(2)}</span>
-                               </div>
-                           ))}
-                           <Separator />
-                           <div className="flex justify-between font-bold text-lg">
-                               <span>Total Due Today</span>
-                               <span>${total.toFixed(2)}</span>
-                           </div>
-                        </CardContent>
-                        <Separator />
-                        <CardHeader>
-                            <CardTitle>Payment Details</CardTitle>
-                            <CardDescription>Enter your card information.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="grid gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="card-number">Card Number</Label>
-                                <Input 
-                                    id="card-number" 
-                                    placeholder="**** **** **** 1234" 
-                                    maxLength={19} 
-                                    value={cardNumber}
-                                    onChange={handleCardNumberChange}
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
+                    <form onSubmit={(e) => { e.preventDefault(); router.push('/signup/verify-email'); }}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Create your account</CardTitle>
+                            </CardHeader>
+                            <CardContent className="grid gap-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="expiry">Expiry</Label>
+                                    <Label htmlFor="full-name">Full name</Label>
+                                    <Input id="full-name" placeholder="John Doe" required />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input id="email" type="email" placeholder="m@example.com" required />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="password">Password</Label>
+                                    <Input id="password" type="password" required />
+                                </div>
+                            </CardContent>
+                            <Separator />
+                            <CardHeader>
+                                <CardTitle>Order Summary</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                               <div className="flex justify-between">
+                                   <span>{selectedPlan.name} (Monthly)</span>
+                                   <span>${selectedPlan.price.toFixed(2)}</span>
+                               </div>
+                               {domain && (
+                                <div className="flex justify-between">
+                                   <span>Domain: {domain}</span>
+                                   <span>${domainPrice.toFixed(2)}</span>
+                               </div>
+                               )}
+                               {selectedAddons.map(addon => (
+                                   <div key={addon.id} className="flex justify-between">
+                                       <span>{addon.name}</span>
+                                       <span>${addon.price.toFixed(2)}</span>
+                                   </div>
+                               ))}
+                               <Separator />
+                               <div className="flex justify-between font-bold text-lg">
+                                   <span>Total Due Today</span>
+                                   <span>${total.toFixed(2)}</span>
+                               </div>
+                            </CardContent>
+                            <Separator />
+                            <CardHeader>
+                                <CardTitle>Payment Details</CardTitle>
+                                <CardDescription>Enter your card information.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="grid gap-4">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="card-number">Card Number</Label>
                                     <Input 
-                                        id="expiry" 
-                                        placeholder="MM/YY" 
-                                        maxLength={5} 
-                                        value={expiry}
-                                        onChange={handleExpiryChange}
+                                        id="card-number" 
+                                        placeholder="**** **** **** 1234" 
+                                        maxLength={19} 
+                                        value={cardNumber}
+                                        onChange={handleCardNumberChange}
+                                        required
                                     />
                                 </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="cvc">CVC</Label>
-                                    <Input id="cvc" placeholder="123" maxLength={4} />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="expiry">Expiry</Label>
+                                        <Input 
+                                            id="expiry" 
+                                            placeholder="MM/YY" 
+                                            maxLength={5} 
+                                            value={expiry}
+                                            onChange={handleExpiryChange}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="cvc">CVC</Label>
+                                        <Input id="cvc" placeholder="123" maxLength={4} required />
+                                    </div>
                                 </div>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="flex-col items-stretch gap-4">
-                            <Button type="submit" className="w-full as-child">
-                            <Link href="/signup/verify-email">Complete Purchase</Link>
-                            </Button>
-                            <div className="text-sm text-muted-foreground text-center">
-                                By clicking "Complete Purchase", you agree to our <Link href="#" className="underline">Terms of Service</Link> and <Link href="#" className="underline">Privacy Policy</Link>.
-                            </div>
-                            <p className="text-center text-sm text-muted-foreground pt-4 border-t w-full">
-                                Already have an account? <Link href="/login" className="underline">Login</Link>
-                            </p>
-                        </CardFooter>
-                    </Card>
+                            </CardContent>
+                            <CardFooter className="flex-col items-stretch gap-4">
+                                <Button type="submit" className="w-full">
+                                    Complete Purchase
+                                </Button>
+                                <div className="text-sm text-muted-foreground text-center">
+                                    By clicking "Complete Purchase", you agree to our <Link href="#" className="underline">Terms of Service</Link> and <Link href="#" className="underline">Privacy Policy</Link>.
+                                </div>
+                                <p className="text-center text-sm text-muted-foreground pt-4 border-t w-full">
+                                    Already have an account? <Link href="/login" className="underline">Login</Link>
+                                </p>
+                            </CardFooter>
+                        </Card>
+                    </form>
                 </div>
             </div>
         </div>
