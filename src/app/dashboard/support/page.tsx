@@ -9,8 +9,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 type TicketStatus = "Open" | "Answered" | "Closed";
 type Ticket = {
@@ -58,34 +59,42 @@ export default function SupportPage() {
                     <h1 className="text-3xl font-bold tracking-tight">Support Center</h1>
                     <p className="text-muted-foreground">Get help and track your support requests.</p>
                 </div>
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button>
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            New Ticket
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Create New Support Ticket</DialogTitle>
-                        </DialogHeader>
-                        <form onSubmit={handleNewTicket}>
-                            <div className="grid gap-4 py-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="subject">Subject</Label>
-                                    <Input id="subject" name="subject" required />
+                <div className="flex gap-2">
+                    <Button asChild variant="outline">
+                        <Link href="/dashboard/support/kb">
+                            <BookOpen className="mr-2 h-4 w-4" />
+                            Knowledge Base
+                        </Link>
+                    </Button>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button>
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                New Ticket
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Create New Support Ticket</DialogTitle>
+                            </DialogHeader>
+                            <form onSubmit={handleNewTicket}>
+                                <div className="grid gap-4 py-4">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="subject">Subject</Label>
+                                        <Input id="subject" name="subject" required />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="message">Message</Label>
+                                        <Textarea id="message" name="message" required rows={5} />
+                                    </div>
                                 </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="message">Message</Label>
-                                    <Textarea id="message" name="message" required rows={5} />
-                                </div>
-                            </div>
-                            <DialogFooter>
-                                <DialogClose asChild><Button type="submit">Submit Ticket</Button></DialogClose>
-                            </DialogFooter>
-                        </form>
-                    </DialogContent>
-                </Dialog>
+                                <DialogFooter>
+                                    <DialogClose asChild><Button type="submit">Submit Ticket</Button></DialogClose>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             </div>
             <Card>
                 <CardHeader>

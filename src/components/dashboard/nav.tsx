@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { CreditCard, Globe, LayoutDashboard, LifeBuoy, Settings as SettingsIcon, Folder, Mail, Lock } from "lucide-react";
+import { CreditCard, Globe, LayoutDashboard, LifeBuoy, Settings as SettingsIcon, Folder, Mail, Lock, BookOpen } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -33,16 +33,18 @@ export function DashboardNav() {
 
   return (
     <SidebarMenu>
-      {navItems.map((item) => (
+      {navItems.map((item) => {
+        const isActive = item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href);
+        return (
         <SidebarMenuItem key={item.href}>
-          <SidebarMenuButton asChild isActive={pathname.startsWith(item.href)} className="w-full justify-start">
+          <SidebarMenuButton asChild isActive={isActive} className="w-full justify-start">
             <Link href={item.href} onClick={handleLinkClick}>
               <item.icon className="h-4 w-4 mr-2" />
               <span>{item.label}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
-      ))}
+      )})}
     </SidebarMenu>
   );
 }
