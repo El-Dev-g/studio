@@ -46,15 +46,15 @@ export default function AIWebsiteBuilderPage() {
 
     const handlePublish = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (!websiteContent) return;
+        if (!websiteContent || !websiteContent.files) return;
 
         const formData = new FormData(event.currentTarget);
         const projectName = formData.get('projectName') as string;
         
         const zip = new JSZip();
-        zip.file("index.html", websiteContent.htmlContent);
-        zip.file("styles.css", websiteContent.cssContent);
-        zip.file("script.js", websiteContent.jsContent);
+        websiteContent.files.forEach(file => {
+            zip.file(file.fileName, file.content);
+        });
 
         try {
             const zipBlob = await zip.generateAsync({ type: "blob" });
@@ -83,21 +83,23 @@ export default function AIWebsiteBuilderPage() {
 
 
     const Preview = () => {
-        if (!websiteContent) return null;
+        if (!websiteContent || !websiteContent.files) return null;
 
-        const { htmlContent } = websiteContent;
+        const indexHtml = websiteContent.files.find(f => f.fileName === 'index.html');
+        const cssFile = websiteContent.files.find(f => f.fileName === 'styles.css');
+        const jsFile = websiteContent.files.find(f => f.fileName === 'script.js');
+
+        if (!indexHtml) return null;
 
         const contentWithTailwind = `
             <head>
                 <script src="https://cdn.tailwindcss.com"></script>
                 <script src="https://unpkg.com/lucide@latest"></script>
-                <link rel="stylesheet" href="data:text/css;base64,${btoa(websiteContent.cssContent)}">
+                ${cssFile ? `<style>${cssFile.content}</style>` : ''}
             </head>
             <body>
-                ${htmlContent}
-                <script>
-                    ${websiteContent.jsContent}
-                </script>
+                ${indexHtml.content}
+                ${jsFile ? `<script>${jsFile.content}</script>`: ''}
             </body>
         `;
 
