@@ -50,7 +50,7 @@ export default function BlogPage() {
                         <Link href="/login">Login</Link>
                     </Button>
                     <Button asChild>
-                        <Link href="/signup">Sign Up</Link>
+                        <Link href="/signup/checkout?plan=cloud">Get Started</Link>
                     </Button>
                 </nav>
             </header>
