@@ -9,6 +9,7 @@ import {
 import { Logo } from "@/components/logo";
 import { DashboardNav } from "@/components/dashboard/nav";
 import { UserNav } from "@/components/dashboard/user-nav";
+import { NotificationsNav } from "@/components/dashboard/notifications-nav";
 
 export default function DashboardLayout({
   children,
@@ -29,7 +30,8 @@ export default function DashboardLayout({
       <SidebarInset>
         <header className="flex h-16 items-center justify-between border-b bg-background px-4 md:px-6 sticky top-0 z-20">
           <SidebarTrigger className="md:hidden" />
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-4">
+            <NotificationsNav />
             <UserNav />
           </div>
         </header>
