@@ -1,5 +1,4 @@
 
-
 'use client'
 
 import Link from "next/link";
@@ -282,7 +281,7 @@ export default function CheckoutPage() {
                             <CardHeader>
                                 <CardTitle>Payment Details</CardTitle>
                                 <CardDescription>Enter your card information.</CardDescription>
-                            </Header>
+                            </CardHeader>
                             <CardContent className="grid gap-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="card-number">Card Number</Label>
@@ -332,4 +331,3 @@ export default function CheckoutPage() {
         </div>
     </div>
   );
-}
