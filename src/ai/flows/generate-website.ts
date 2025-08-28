@@ -18,7 +18,9 @@ const GenerateWebsiteInputSchema = z.object({
 export type GenerateWebsiteInput = z.infer<typeof GenerateWebsiteInputSchema>;
 
 const GenerateWebsiteOutputSchema = z.object({
-    htmlContent: z.string().describe('The complete HTML content for a single-page landing page, styled with Tailwind CSS.'),
+    htmlContent: z.string().describe('The complete HTML content for the index.html file, styled with Tailwind CSS classes and linking to styles.css and script.js.'),
+    cssContent: z.string().describe('The CSS content for the styles.css file.'),
+    jsContent: z.string().describe('The JavaScript content for the script.js file for any interactivity.'),
 });
 export type GenerateWebsiteOutput = z.infer<typeof GenerateWebsiteOutputSchema>;
 
@@ -34,23 +36,30 @@ const prompt = ai.definePrompt({
     output: { schema: GenerateWebsiteOutputSchema },
     prompt: `You are an expert website designer and developer. 
     
-    Given a description of a business or website idea, you will generate the complete HTML for a beautiful and professional single-page landing page.
+    Given a description of a business or website idea, you will generate the code for a beautiful and professional single-page landing page.
     
-    The output should be a JSON object that matches the provided schema, containing a single 'htmlContent' field with the full HTML document.
+    The output must be a JSON object matching the schema with three fields: 'htmlContent', 'cssContent', and 'jsContent'.
 
-    Your response MUST be a single HTML file. Do not include any other files.
-    
-    The HTML must be styled using Tailwind CSS classes. You can assume Tailwind is available. Do not use inline styles or a <style> tag.
-    
-    The page should include the following sections:
-    1.  A modern navigation bar with a logo and links.
-    2.  An impactful hero section with a clear headline, subtitle, and a call-to-action button.
-    3.  A features section highlighting 3-4 key benefits or services. Use lucide-react icons where appropriate.
-    4.  A compelling call-to-action section.
-    5.  A simple footer with copyright information and social links.
+    1.  **htmlContent**: 
+        *   This will be the full content for an \`index.html\` file.
+        *   It MUST link to a local './styles.css' and a './script.js'. Do NOT use a CDN for anything other than fonts or icons.
+        *   It must be styled using Tailwind CSS classes directly in the HTML. Do not use inline styles or a <style> tag.
+        *   The page should include:
+            *   A modern navigation bar with a logo and links.
+            *   An impactful hero section with a clear headline, subtitle, and a call-to-action button.
+            *   A features section highlighting 3-4 key benefits or services. Use lucide-react icons where appropriate.
+            *   A compelling call-to-action section.
+            *   A simple footer with copyright information and social links.
+        *   Use placeholder images from picsum.photos (e.g., https://picsum.photos/800/600).
+        *   For icons, use names from the 'lucide-react' library (e.g., 'Rocket', 'ShieldCheck'), which will be rendered by a script.
 
-    Use placeholder images from picsum.photos (e.g., https://picsum.photos/800/600).
-    For icons, use names from the 'lucide-react' library (e.g., 'Rocket', 'ShieldCheck').
+    2.  **cssContent**: 
+        *   This will be the content for a \`styles.css\` file.
+        *   Include some basic body styles, and styles for a custom font if you use one from Google Fonts.
+
+    3.  **jsContent**:
+        *   This will be the content for a \`script.js\` file.
+        *   It should contain the necessary JavaScript to make the page interactive, such as mobile menu toggling or activating the Lucide icons. For Lucide, use \`lucide.createIcons();\`.
 
     Business Description: {{{description}}}`,
 });

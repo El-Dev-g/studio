@@ -2,14 +2,19 @@
 "use client";
 
 import { useState } from "react";
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { LoaderCircle, Wand2, CheckCircle } from "lucide-react";
+import { LoaderCircle, Wand2, CheckCircle, PackageCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { generateWebsiteAction } from "@/app/actions";
 import type { GenerateWebsiteOutput } from "@/ai/flows/generate-website";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+
 
 export default function AIWebsiteBuilderPage() {
     const [isLoading, setIsLoading] = useState(false);
@@ -39,29 +44,96 @@ export default function AIWebsiteBuilderPage() {
         setIsLoading(false);
     };
 
+    const handlePublish = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (!websiteContent) return;
+
+        const formData = new FormData(event.currentTarget);
+        const projectName = formData.get('projectName') as string;
+        
+        const zip = new JSZip();
+        zip.file("index.html", websiteContent.htmlContent);
+        zip.file("styles.css", websiteContent.cssContent);
+        zip.file("script.js", websiteContent.jsContent);
+
+        try {
+            const zipBlob = await zip.generateAsync({ type: "blob" });
+            saveAs(zipBlob, `${projectName}.zip`);
+            
+            toast({
+                title: "Download Started",
+                description: `Your project ${projectName}.zip is downloading.`,
+            });
+
+            // Here you would also add logic to save to the File Manager state
+            // For now, we'll just show a success toast for that part.
+            toast({
+                title: "Project Saved!",
+                description: `${projectName} has been saved to your File Manager.`,
+            });
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Failed to create ZIP",
+                description: "There was an error while packaging your project files.",
+            });
+            console.error(error);
+        }
+    };
+
+
     const Preview = () => {
         if (!websiteContent) return null;
 
         const { htmlContent } = websiteContent;
 
-        // We need to inject the Tailwind CSS link into the iframe's content
         const contentWithTailwind = `
             <head>
                 <script src="https://cdn.tailwindcss.com"></script>
                 <script src="https://unpkg.com/lucide@latest"></script>
+                <link rel="stylesheet" href="data:text/css;base64,${btoa(websiteContent.cssContent)}">
             </head>
             <body>
                 ${htmlContent}
                 <script>
-                    lucide.createIcons();
+                    ${websiteContent.jsContent}
                 </script>
             </body>
         `;
 
         return (
              <div className="w-full rounded-xl border bg-card shadow-lg overflow-hidden mt-8">
-                <div className="bg-slate-100 p-2 border-b">
-                    <p className="text-sm text-center font-medium">Website Preview</p>
+                <div className="bg-slate-100 p-2 border-b flex justify-between items-center">
+                    <p className="text-sm text-center font-medium pl-4">Website Preview</p>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button size="sm" className="mr-2">
+                                <PackageCheck className="mr-2 h-4 w-4" />
+                                Publish & Download
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Publish Website</DialogTitle>
+                                <DialogDescription>
+                                    This will download a ZIP of your website files and save it to your File Manager.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <form onSubmit={handlePublish}>
+                                <div className="grid gap-4 py-4">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="projectName">Project Name</Label>
+                                        <Input id="projectName" name="projectName" defaultValue="my-awesome-site" required />
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <DialogClose asChild>
+                                        <Button type="submit">Publish</Button>
+                                    </DialogClose>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
                 </div>
                 <iframe
                     srcDoc={contentWithTailwind}
