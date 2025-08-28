@@ -1,0 +1,37 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar";
+import { CreditCard, Globe, LayoutDashboard, LifeBuoy, Settings as SettingsIcon } from "lucide-react";
+
+const navItems = [
+  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/dashboard/domains", icon: Globe, label: "Domains" },
+  { href: "/dashboard/billing", icon: CreditCard, label: "Billing" },
+  { href: "/dashboard/support", icon: LifeBuoy, label: "Support" },
+  { href: "/dashboard/settings", icon: SettingsIcon, label: "Settings" },
+];
+
+export function DashboardNav() {
+  const pathname = usePathname();
+
+  return (
+    <SidebarMenu>
+      {navItems.map((item) => (
+        <SidebarMenuItem key={item.href}>
+          <SidebarMenuButton asChild isActive={pathname === item.href} className="w-full justify-start">
+            <Link href={item.href}>
+              <item.icon className="h-4 w-4 mr-2" />
+              <span>{item.label}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  );
+}
