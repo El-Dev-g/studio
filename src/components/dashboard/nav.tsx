@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { CreditCard, Globe, LayoutDashboard, LifeBuoy, Settings as SettingsIcon, Folder, Mail, Lock, BookOpen, Shield, AppWindow } from "lucide-react";
+import { CreditCard, Globe, LayoutDashboard, LifeBuoy, Settings as SettingsIcon, Folder, Mail, Shield, AppWindow } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -17,7 +17,6 @@ const navItems = [
   { href: "/dashboard/files", icon: Folder, label: "File Management" },
   { href: "/dashboard/email", icon: Mail, label: "Email Management" },
   { href: "/dashboard/security", icon: Shield, label: "Security" },
-  { href: "/dashboard/ssl", icon: Lock, label: "SSL Management" },
   { href: "/dashboard/billing", icon: CreditCard, label: "Billing" },
   { href: "/dashboard/support", icon: LifeBuoy, label: "Support" },
   { href: "/dashboard/settings", icon: SettingsIcon, label: "Settings" },
