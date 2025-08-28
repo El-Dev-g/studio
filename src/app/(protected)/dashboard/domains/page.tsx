@@ -1,14 +1,15 @@
+
 "use client";
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Globe } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 
@@ -91,6 +92,25 @@ export default function DomainsPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+       <Card>
+        <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5 text-primary" />
+                Nameserver Information
+            </CardTitle>
+            <CardDescription>To connect your domain, set these nameservers at your domain registrar.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2">
+            <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                <span className="font-mono text-sm">ns1.skyhost.com</span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                <span className="font-mono text-sm">ns2.skyhost.com</span>
+            </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>My Domains</CardTitle>
