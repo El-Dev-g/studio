@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -16,28 +17,8 @@ const GenerateWebsiteInputSchema = z.object({
 });
 export type GenerateWebsiteInput = z.infer<typeof GenerateWebsiteInputSchema>;
 
-const FeatureSchema = z.object({
-    icon: z.string().describe("A relevant icon name from lucide-react, like 'Rocket' or 'ShieldCheck'."),
-    title: z.string(),
-    description: z.string(),
-});
-
 const GenerateWebsiteOutputSchema = z.object({
-    palette: z.object({
-        primary: z.string().describe('A primary color for the website in HSL format, e.g., "220 80% 55%"'),
-        secondary: z.string().describe('A secondary color for the website in HSL format, e.g., "210 40% 96.1%"'),
-    }),
-    hero: z.object({
-        title: z.string().describe('A catchy headline for the website.'),
-        subtitle: z.string().describe('A short, engaging subtitle.'),
-        cta: z.string().describe('A call-to-action button text, e.g., "Get Started".'),
-    }),
-    features: z.array(FeatureSchema).describe('A list of 3 key features of the business.'),
-    ctaSection: z.object({
-        title: z.string().describe('A title for the final call-to-action section.'),
-        subtitle: z.string().describe('A subtitle for the final call-to-action section.'),
-        cta: z.string().describe('A call-to-action button text for the final section.'),
-    }),
+    htmlContent: z.string().describe('The complete HTML content for a single-page landing page, styled with Tailwind CSS.'),
 });
 export type GenerateWebsiteOutput = z.infer<typeof GenerateWebsiteOutputSchema>;
 
@@ -51,19 +32,25 @@ const prompt = ai.definePrompt({
     name: 'generateWebsitePrompt',
     input: { schema: GenerateWebsiteInputSchema },
     output: { schema: GenerateWebsiteOutputSchema },
-    prompt: `You are an expert website designer. 
+    prompt: `You are an expert website designer and developer. 
     
-    Given a description of a business or website idea, you will generate the content for a beautiful landing page.
+    Given a description of a business or website idea, you will generate the complete HTML for a beautiful and professional single-page landing page.
     
-    The output should be a JSON object that matches the provided schema.
+    The output should be a JSON object that matches the provided schema, containing a single 'htmlContent' field with the full HTML document.
+
+    Your response MUST be a single HTML file. Do not include any other files.
     
-    The color palette should be modern and aesthetically pleasing.
+    The HTML must be styled using Tailwind CSS classes. You can assume Tailwind is available. Do not use inline styles or a <style> tag.
     
-    The hero section should be impactful and immediately grab the user's attention.
-    
-    The features section should highlight the most important aspects of the business. Make sure to choose appropriate icons from the lucide-react library.
-    
-    The final call-to-action should be compelling and encourage users to take the next step.
+    The page should include the following sections:
+    1.  A modern navigation bar with a logo and links.
+    2.  An impactful hero section with a clear headline, subtitle, and a call-to-action button.
+    3.  A features section highlighting 3-4 key benefits or services. Use lucide-react icons where appropriate.
+    4.  A compelling call-to-action section.
+    5.  A simple footer with copyright information and social links.
+
+    Use placeholder images from picsum.photos (e.g., https://picsum.photos/800/600).
+    For icons, use names from the 'lucide-react' library (e.g., 'Rocket', 'ShieldCheck').
 
     Business Description: {{{description}}}`,
 });

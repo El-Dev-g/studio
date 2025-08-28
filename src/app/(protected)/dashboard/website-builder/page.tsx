@@ -6,29 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { LoaderCircle, Wand2, ArrowRight, CheckCircle, Info } from "lucide-react";
+import { LoaderCircle, Wand2, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { generateWebsiteAction } from "@/app/actions";
 import type { GenerateWebsiteOutput } from "@/ai/flows/generate-website";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
-import * as Icons from "lucide-react";
-
-// A type guard to check if a string is a valid Lucide icon name
-function isLucideIcon(name: string): name is keyof typeof Icons {
-  return name in Icons;
-}
-
-// A component to dynamically render a Lucide icon
-const DynamicIcon = ({ name, ...props }: { name: string } & Icons.LucideProps) => {
-  if (isLucideIcon(name)) {
-    const IconComponent = Icons[name];
-    return <IconComponent {...props} />;
-  }
-  // Fallback icon if the name is invalid
-  return <Info {...props} />;
-};
-
 
 export default function AIWebsiteBuilderPage() {
     const [isLoading, setIsLoading] = useState(false);
@@ -61,94 +42,33 @@ export default function AIWebsiteBuilderPage() {
     const Preview = () => {
         if (!websiteContent) return null;
 
-        const { hero, features, ctaSection, palette } = websiteContent;
+        const { htmlContent } = websiteContent;
 
-        const pageStyle = {
-            '--preview-primary-hsl': palette.primary,
-            '--preview-secondary-hsl': palette.secondary,
-            '--preview-primary': `hsl(${palette.primary})`,
-            '--preview-primary-foreground': '#ffffff',
-            '--preview-secondary': `hsl(${palette.secondary})`,
-        } as React.CSSProperties;
+        // We need to inject the Tailwind CSS link into the iframe's content
+        const contentWithTailwind = `
+            <head>
+                <script src="https://cdn.tailwindcss.com"></script>
+                <script src="https://unpkg.com/lucide@latest"></script>
+            </head>
+            <body>
+                ${htmlContent}
+                <script>
+                    lucide.createIcons();
+                </script>
+            </body>
+        `;
 
         return (
-            <div className="w-full rounded-xl border bg-card shadow-lg overflow-hidden mt-8" style={pageStyle}>
-                <div className="relative isolate overflow-hidden bg-background">
-                    <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-40">
-                        <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
-                            <h1 className="mt-10 text-4xl font-bold tracking-tight text-foreground sm:text-6xl" style={{ color: 'var(--preview-primary)' }}>
-                                {hero.title}
-                            </h1>
-                            <p className="mt-6 text-lg leading-8 text-muted-foreground">{hero.subtitle}</p>
-                            <div className="mt-10 flex items-center gap-x-6">
-                                <Button style={{ backgroundColor: 'var(--preview-primary)', color: 'var(--preview-primary-foreground)' }}>{hero.cta}</Button>
-                                <Button variant="link">Learn more <ArrowRight className="ml-2 h-4 w-4"/></Button>
-                            </div>
-                        </div>
-                        <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mt-0 lg:mr-0 lg:max-w-none lg:flex-none xl:ml-32">
-                           <Image
-                                src="https://picsum.photos/800/600"
-                                alt="App screenshot"
-                                data-ai-hint="abstract technology"
-                                width={800}
-                                height={600}
-                                className="w-[48rem] max-w-none rounded-xl shadow-xl ring-1 ring-border"
-                           />
-                        </div>
-                    </div>
+             <div className="w-full rounded-xl border bg-card shadow-lg overflow-hidden mt-8">
+                <div className="bg-slate-100 p-2 border-b">
+                    <p className="text-sm text-center font-medium">Website Preview</p>
                 </div>
-
-                <div className="bg-secondary py-24 sm:py-32">
-                    <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                        <div className="mx-auto max-w-2xl lg:text-center">
-                            <p className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                                Everything you need to get started
-                            </p>
-                        </div>
-                        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-                            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-                                {features.map((feature) => (
-                                <div key={feature.title} className="relative pl-16">
-                                    <dt className="text-base font-semibold leading-7 text-foreground">
-                                    <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-background" style={{ backgroundColor: 'var(--preview-primary)' }}>
-                                        <DynamicIcon name={feature.icon} className="h-6 w-6 text-white" style={{ color: 'var(--preview-primary-foreground)' }}/>
-                                    </div>
-                                    {feature.title}
-                                    </dt>
-                                    <dd className="mt-2 text-base leading-7 text-muted-foreground">{feature.description}</dd>
-                                </div>
-                                ))}
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-                 <div className="bg-background">
-                    <div className="mx-auto max-w-7xl py-24 sm:px-6 sm:py-32 lg:px-8">
-                        <div className="relative isolate overflow-hidden bg-secondary px-6 pt-16 shadow-2xl sm:rounded-3xl sm:px-16 md:pt-24 lg:flex lg:gap-x-20 lg:px-24 lg:pt-0">
-                        <div className="mx-auto max-w-md text-center lg:mx-0 lg:flex-auto lg:py-32 lg:text-left">
-                            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                                {ctaSection.title}
-                            </h2>
-                            <p className="mt-6 text-lg leading-8 text-muted-foreground">
-                                {ctaSection.subtitle}
-                            </p>
-                            <div className="mt-10 flex items-center justify-center gap-x-6 lg:justify-start">
-                                <Button style={{ backgroundColor: 'var(--preview-primary)', color: 'var(--preview-primary-foreground)' }}>{ctaSection.cta}</Button>
-                            </div>
-                        </div>
-                        <div className="relative mt-16 h-80 lg:mt-8">
-                            <Image
-                                className="absolute left-0 top-0 w-[48rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
-                                src="https://picsum.photos/800/400"
-                                data-ai-hint="abstract tech background"
-                                alt="App screenshot"
-                                width={800}
-                                height={400}
-                            />
-                        </div>
-                        </div>
-                    </div>
-                </div>
+                <iframe
+                    srcDoc={contentWithTailwind}
+                    className="w-full h-[70vh]"
+                    sandbox="allow-scripts allow-same-origin"
+                    title="AI Generated Website Preview"
+                />
             </div>
         );
     };
