@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
@@ -10,9 +11,9 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const plans = [
-    { name: "Shared Hosting", price: "$9", period: "/month", features: ["1 Website", "50 GB SSD Storage", "Weekly Backups", "Free SSL"], popular: false },
-    { name: "Cloud Hosting", price: "$29", period: "/month", features: ["5 Websites", "200 GB SSD Storage", "Daily Backups", "Free CDN", "Dedicated IP"], popular: true },
-    { name: "VPS Hosting", price: "$59", period: "/month", features: ["Scalable Resources", "Full Root Access", "Daily Backups", "Staging Environment"], popular: false }
+    { id: 'shared', name: "Shared Hosting", price: "$9", period: "/month", features: ["1 Website", "50 GB SSD Storage", "Weekly Backups", "Free SSL"], popular: false },
+    { id: 'cloud', name: "Cloud Hosting", price: "$29", period: "/month", features: ["5 Websites", "200 GB SSD Storage", "Daily Backups", "Free CDN", "Dedicated IP"], popular: true },
+    { id: 'vps', name: "VPS Hosting", price: "$59", period: "/month", features: ["Scalable Resources", "Full Root Access", "Daily Backups", "Staging Environment"], popular: false }
 ]
 
 const blogPosts = [
@@ -75,7 +76,7 @@ export default function HomePage() {
                 </p>
                  <div className="flex flex-col gap-2 min-[400px]:flex-row">
                     <Button asChild size="lg">
-                        <Link href="/signup">Get Started</Link>
+                        <Link href="/signup/checkout?plan=cloud">Get Started</Link>
                     </Button>
                     <Button asChild variant="outline" size="lg">
                         <Link href="#plans">View Plans</Link>
@@ -125,7 +126,7 @@ export default function HomePage() {
                         </CardContent>
                         <CardFooter>
                             <Button className="w-full" variant={plan.popular ? "default" : "outline"} asChild>
-                              <Link href="/signup">Choose Plan</Link>
+                              <Link href={`/signup/checkout?plan=${plan.id}`}>Choose Plan</Link>
                             </Button>
                         </CardFooter>
                     </Card>
@@ -220,3 +221,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+    
