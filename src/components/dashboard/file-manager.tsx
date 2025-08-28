@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef } from "react";
@@ -8,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Folder, File, Upload, Download, Trash2, Edit, PlusCircle } from "lucide-react";
+import { Folder, File, Upload, Download, Trash2, Edit, PlusCircle, GitPullRequest } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const initialFiles = [
@@ -67,9 +66,29 @@ export function FileManager() {
         };
         setFiles([newFile, ...files]);
         toast({ title: "Success", description: `File "${file.name}" uploaded.`});
-        // Reset the input value to allow uploading the same file again
         event.target.value = "";
     }
+  };
+
+  const handleImportFromGit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const repoUrl = formData.get("repoUrl") as string;
+    
+    // Naive way to get repo name from URL
+    const repoName = repoUrl.split('/').pop()?.replace('.git', '') || 'new-repository';
+
+    const newFolder: FileItem = {
+        name: repoName,
+        type: 'folder',
+        size: '0 KB',
+        modified: new Date().toISOString().slice(0, 16).replace('T', ' ')
+    };
+    setFiles([newFolder, ...files]);
+    toast({
+        title: "Import Started",
+        description: `Your repository "${repoName}" is being cloned.`,
+    });
   };
 
   return (
@@ -87,6 +106,28 @@ export function FileManager() {
                 onChange={handleFileChange}
             />
             <Button variant="outline" onClick={handleUploadClick}><Upload className="mr-2 h-4 w-4"/> Upload</Button>
+            <Dialog>
+                <DialogTrigger asChild>
+                    <Button variant="outline"><GitPullRequest className="mr-2 h-4 w-4"/> Import from Git</Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Import from Git Repository</DialogTitle>
+                        <DialogDescription>Enter the URL of the repository you want to clone.</DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleImportFromGit}>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid gap-2">
+                                <Label htmlFor="repoUrl">Repository URL</Label>
+                                <Input id="repoUrl" name="repoUrl" placeholder="https://github.com/user/repo.git" required />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild><Button type="submit">Import Repository</Button></DialogClose>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
             <Dialog>
                 <DialogTrigger asChild>
                     <Button><PlusCircle className="mr-2 h-4 w-4"/> New Folder</Button>
