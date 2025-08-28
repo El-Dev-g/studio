@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -28,6 +29,7 @@ export function FileManager() {
   const [files, setFiles] = useState<FileItem[]>(initialFiles);
   const [fileToDelete, setFileToDelete] = useState<FileItem | null>(null);
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleNewFolder = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -50,6 +52,26 @@ export function FileManager() {
     toast({title: "Success", description: `"${fileToDelete.name}" has been deleted.`});
   };
 
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        const newFile: FileItem = {
+            name: file.name,
+            type: 'file',
+            size: `${(file.size / 1024).toFixed(2)} KB`,
+            modified: new Date().toISOString().slice(0, 16).replace('T', ' ')
+        };
+        setFiles([newFile, ...files]);
+        toast({ title: "Success", description: `File "${file.name}" uploaded.`});
+        // Reset the input value to allow uploading the same file again
+        event.target.value = "";
+    }
+  };
+
   return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -58,7 +80,13 @@ export function FileManager() {
             <CardDescription>/home/user/public_html</CardDescription>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => toast({ title: "Not implemented", description: "File upload is not yet available." })}><Upload className="mr-2 h-4 w-4"/> Upload</Button>
+            <Input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                onChange={handleFileChange}
+            />
+            <Button variant="outline" onClick={handleUploadClick}><Upload className="mr-2 h-4 w-4"/> Upload</Button>
             <Dialog>
                 <DialogTrigger asChild>
                     <Button><PlusCircle className="mr-2 h-4 w-4"/> New Folder</Button>
