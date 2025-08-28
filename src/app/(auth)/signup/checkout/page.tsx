@@ -232,16 +232,16 @@ export default function CheckoutPage() {
                         <CardContent className="grid gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="card-number">Card Number</Label>
-                                <Input id="card-number" placeholder="**** **** **** 1234" />
+                                <Input id="card-number" placeholder="**** **** **** 1234" maxLength={19} />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="expiry">Expiry</Label>
-                                    <Input id="expiry" placeholder="MM/YY" />
+                                    <Input id="expiry" placeholder="MM/YY" maxLength={5} />
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="cvc">CVC</Label>
-                                    <Input id="cvc" placeholder="123" />
+                                    <Input id="cvc" placeholder="123" maxLength={4} />
                                 </div>
                             </div>
                         </CardContent>
