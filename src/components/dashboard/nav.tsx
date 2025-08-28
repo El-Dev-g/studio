@@ -7,11 +7,14 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import { CreditCard, Globe, LayoutDashboard, LifeBuoy, Settings as SettingsIcon } from "lucide-react";
+import { CreditCard, Globe, LayoutDashboard, LifeBuoy, Settings as SettingsIcon, Folder, Mail, Lock } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/dashboard/domains", icon: Globe, label: "Domains" },
+  { href: "/dashboard/files", icon: Folder, label: "File Management" },
+  { href: "/dashboard/email", icon: Mail, label: "Email Management" },
+  { href: "/dashboard/ssl", icon: Lock, label: "SSL Management" },
   { href: "/dashboard/billing", icon: CreditCard, label: "Billing" },
   { href: "/dashboard/support", icon: LifeBuoy, label: "Support" },
   { href: "/dashboard/settings", icon: SettingsIcon, label: "Settings" },
@@ -24,7 +27,7 @@ export function DashboardNav() {
     <SidebarMenu>
       {navItems.map((item) => (
         <SidebarMenuItem key={item.href}>
-          <SidebarMenuButton asChild isActive={pathname === item.href} className="w-full justify-start">
+          <SidebarMenuButton asChild isActive={pathname.startsWith(item.href)} className="w-full justify-start">
             <Link href={item.href}>
               <item.icon className="h-4 w-4 mr-2" />
               <span>{item.label}</span>
