@@ -6,6 +6,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { CreditCard, Globe, LayoutDashboard, LifeBuoy, Settings as SettingsIcon, Folder, Mail, Lock } from "lucide-react";
 
@@ -22,13 +23,20 @@ const navItems = [
 
 export function DashboardNav() {
   const pathname = usePathname();
+  const { setOpenMobile, isMobile } = useSidebar();
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
 
   return (
     <SidebarMenu>
       {navItems.map((item) => (
         <SidebarMenuItem key={item.href}>
           <SidebarMenuButton asChild isActive={pathname.startsWith(item.href)} className="w-full justify-start">
-            <Link href={item.href}>
+            <Link href={item.href} onClick={handleLinkClick}>
               <item.icon className="h-4 w-4 mr-2" />
               <span>{item.label}</span>
             </Link>
