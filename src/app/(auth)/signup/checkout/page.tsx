@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import Link from "next/link";
@@ -11,10 +12,11 @@ import { useSearchParams } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, ShoppingCart } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { DomainSuggester } from "@/components/domain-suggester";
 
 const plans = {
     shared: { name: "Shared Hosting", price: 9, description: "For personal sites & blogs" },
@@ -41,7 +43,6 @@ export default function CheckoutPage() {
 
   const [domain, setDomain] = useState<string | null>(initialDomain);
   const [domainPrice, setDomainPrice] = useState(initialDomain ? 15 : 0);
-  const [searchedDomain, setSearchedDomain] = useState('');
   const [selectedAddons, setSelectedAddons] = useState<typeof addons[0][]>([]);
 
   const { toast } = useToast();
@@ -58,29 +59,10 @@ export default function CheckoutPage() {
     }
   }, [searchParams]);
 
-  const handleDomainSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if(!searchedDomain) return;
-
-    if(searchedDomain.includes('.')) {
-        setDomain(searchedDomain);
-        setDomainPrice(15); // Simulate registration fee
-        toast({ title: "Success!", description: `${searchedDomain} is available.` });
-    } else {
-        toast({ variant: "destructive", title: "Invalid Domain", description: "Please enter a valid domain name." });
-    }
-  }
-   const handleExistingDomain = (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const existingDomain = formData.get("existingDomain") as string;
-    if(existingDomain && existingDomain.includes('.')) {
-        setDomain(existingDomain);
-        setDomainPrice(0); // No charge for using existing
-        toast({ title: "Domain Added", description: `You will be prompted to update nameservers for ${existingDomain} after setup.` });
-    } else {
-        toast({ variant: "destructive", title: "Invalid Domain", description: "Please enter a valid domain name." });
-    }
+  const handleDomainSelect = (selectedDomain: string) => {
+    setDomain(selectedDomain);
+    setDomainPrice(15);
+    toast({ title: "Domain Added!", description: `${selectedDomain} is now part of your order.` });
   }
 
   const handleAddonToggle = (addon: typeof addons[0]) => {
@@ -135,32 +117,21 @@ export default function CheckoutPage() {
                  </div>
                   <div>
                     <h2 className="text-xl font-semibold mb-4">2. Choose Your Domain</h2>
-                    <Card>
-                        <CardContent className="pt-6">
-                            <Tabs defaultValue={initialDomain ? "register" : "register"}>
-                                <TabsList className="grid w-full grid-cols-2">
-                                    <TabsTrigger value="register">Register a new domain</TabsTrigger>
-                                    <TabsTrigger value="transfer">Use my existing domain</TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="register" className="pt-4">
-                                     <form onSubmit={handleDomainSearch} className="flex gap-2">
-                                        <Input 
-                                            value={searchedDomain}
-                                            onChange={(e) => setSearchedDomain(e.target.value)}
-                                            placeholder="findyourdomain.com" 
-                                        />
-                                        <Button type="submit">Search</Button>
-                                    </form>
-                                </TabsContent>
-                                <TabsContent value="transfer" className="pt-4">
-                                    <form onSubmit={handleExistingDomain} className="flex gap-2">
-                                        <Input name="existingDomain" placeholder="yourdomain.com" required/>
-                                        <Button type="submit">Use Domain</Button>
-                                    </form>
-                                </TabsContent>
-                            </Tabs>
-                        </CardContent>
-                    </Card>
+                    {domain ? (
+                         <Card>
+                            <CardContent className="pt-6">
+                                <div className="flex items-center justify-between p-4 bg-secondary rounded-lg">
+                                    <div className="flex items-center gap-3">
+                                        <CheckCircle className="h-6 w-6 text-primary"/>
+                                        <p className="font-semibold text-lg">{domain}</p>
+                                    </div>
+                                    <Button variant="outline" onClick={() => { setDomain(null); setDomainPrice(0); }}>Change</Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <DomainSuggester onDomainSelect={handleDomainSelect} />
+                    )}
                  </div>
                  <div>
                     <h2 className="text-xl font-semibold mb-4">3. Recommended Addons</h2>
