@@ -7,9 +7,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <header className="px-4 lg:px-6 h-16 flex items-center border-b sticky top-0 bg-background/95 backdrop-blur-sm z-10">
-        <Link href="/" className="flex items-center justify-center">
-          <Logo />
-        </Link>
+        <Logo />
         <nav className="ml-auto flex gap-4 sm:gap-6">
           <Button asChild variant="ghost">
             <Link href="/login">Login</Link>
