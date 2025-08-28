@@ -34,12 +34,13 @@ type PlanId = keyof typeof plans;
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
   const initialPlanId = searchParams.get('plan') as PlanId || 'cloud';
-  
+  const initialDomain = searchParams.get('domain');
+
   const [selectedPlanId, setSelectedPlanId] = useState<PlanId>(initialPlanId);
   const selectedPlan = useMemo(() => ({ ...plans[selectedPlanId], id: selectedPlanId }), [selectedPlanId]);
 
-  const [domain, setDomain] = useState<string | null>(null);
-  const [domainPrice, setDomainPrice] = useState(0);
+  const [domain, setDomain] = useState<string | null>(initialDomain);
+  const [domainPrice, setDomainPrice] = useState(initialDomain ? 15 : 0);
   const [searchedDomain, setSearchedDomain] = useState('');
   const [selectedAddons, setSelectedAddons] = useState<typeof addons[0][]>([]);
 
@@ -49,6 +50,11 @@ export default function CheckoutPage() {
     const planIdFromUrl = searchParams.get('plan') as PlanId;
     if (planIdFromUrl && plans[planIdFromUrl]) {
         setSelectedPlanId(planIdFromUrl);
+    }
+    const domainFromUrl = searchParams.get('domain');
+    if(domainFromUrl) {
+      setDomain(domainFromUrl);
+      setDomainPrice(15);
     }
   }, [searchParams]);
 
@@ -131,7 +137,7 @@ export default function CheckoutPage() {
                     <h2 className="text-xl font-semibold mb-4">2. Choose Your Domain</h2>
                     <Card>
                         <CardContent className="pt-6">
-                            <Tabs defaultValue="register">
+                            <Tabs defaultValue={initialDomain ? "register" : "register"}>
                                 <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="register">Register a new domain</TabsTrigger>
                                     <TabsTrigger value="transfer">Use my existing domain</TabsTrigger>

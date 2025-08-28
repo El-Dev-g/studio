@@ -1,18 +1,21 @@
+
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { getDomainSuggestions } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Sparkles, LoaderCircle, Search } from "lucide-react";
+import { Sparkles, LoaderCircle, ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export function DomainSuggester() {
   const [isLoading, setIsLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -36,6 +39,15 @@ export function DomainSuggester() {
     
     setIsLoading(false);
   };
+  
+  const handleAddToCart = (domain: string) => {
+    toast({
+      title: "Added to cart!",
+      description: `${domain} has been added. Redirecting to checkout...`
+    });
+    router.push(`/signup/checkout?domain=${domain}`);
+  };
+
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg">
@@ -92,9 +104,9 @@ export function DomainSuggester() {
                 {suggestions.map((domain, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-secondary rounded-lg border">
                         <span className="font-medium">{domain}</span>
-                        <Button variant="outline" size="sm" className="bg-background">
-                            <Search className="mr-2 h-4 w-4"/>
-                            Check
+                        <Button variant="default" size="sm" onClick={() => handleAddToCart(domain)}>
+                            <ShoppingCart className="mr-2 h-4 w-4"/>
+                            Add to Cart
                         </Button>
                     </div>
                 ))}
