@@ -16,8 +16,9 @@ const plans = [
 ]
 
 const blogPosts = [
-    { 
-        title: "The Ultimate Guide to Choosing a Domain Name", 
+    {
+        title: "The Ultimate Guide to Choosing a Domain Name",
+        slug: "the-ultimate-guide-to-choosing-a-domain-name",
         category: "Domains", 
         excerpt: "Your domain name is the cornerstone of your online identity. This guide will walk you through everything you need to know to pick the perfect one.",
         author: "Alex Johnson",
@@ -25,8 +26,9 @@ const blogPosts = [
         image: "https://picsum.photos/800/600",
         imageHint: "abstract keyboard"
     },
-    { 
-        title: "5 Reasons Why Your Business Needs a Professional Email", 
+    {
+        title: "5 Reasons Why Your Business Needs a Professional Email",
+        slug: "5-reasons-why-your-business-needs-a-professional-email",
         category: "Email", 
         excerpt: "Discover why using a custom email address like 'you@yourdomain.com' is crucial for building trust and brand recognition.",
         author: "Maria Garcia",
@@ -34,8 +36,9 @@ const blogPosts = [
         image: "https://picsum.photos/800/600",
         imageHint: "person typing"
     },
-    { 
-        title: "A Beginner’s Guide to Web Hosting: Shared vs. VPS vs. Dedicated", 
+    {
+        title: "A Beginner’s Guide to Web Hosting: Shared vs. VPS vs. Dedicated",
+        slug: "a-beginners-guide-to-web-hosting-shared-vs-vps-vs-dedicated",
         category: "Hosting", 
         excerpt: "Confused by the different types of web hosting? We break down the pros and cons of each to help you make an informed decision.",
         author: "Chris Lee",
@@ -147,37 +150,39 @@ export default function HomePage() {
                 </div>
                 <div className="grid md:grid-cols-3 gap-8">
                     {blogPosts.map(post => (
-                        <Card key={post.title} className="flex flex-col overflow-hidden">
-                           <Image 
-                            src={post.image} 
-                            alt={post.title} 
-                            width={800} 
-                            height={600} 
-                            data-ai-hint={post.imageHint}
-                            className="aspect-video object-cover" />
-                           <CardHeader>
-                               <Badge variant="secondary" className="w-fit">{post.category}</Badge>
-                               <CardTitle className="mt-2 text-xl">{post.title}</CardTitle>
-                           </CardHeader>
-                           <CardContent className="flex-grow">
-                               <p className="text-muted-foreground">{post.excerpt}</p>
-                           </CardContent>
-                           <CardFooter className="flex items-center gap-4 pt-4">
-                                <Avatar>
-                                    <AvatarImage src={post.avatar} alt={post.author} data-ai-hint="person avatar"/>
-                                    <AvatarFallback>{post.author.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="font-semibold">{post.author}</p>
-                                    <p className="text-sm text-muted-foreground">Staff Writer</p>
-                                </div>
-                           </CardFooter>
-                        </Card>
+                        <Link href={`/blog/${post.slug}`} key={post.slug} className="block hover:scale-105 transition-transform duration-200">
+                            <Card className="flex flex-col overflow-hidden h-full">
+                               <Image 
+                                src={post.image} 
+                                alt={post.title} 
+                                width={800} 
+                                height={600} 
+                                data-ai-hint={post.imageHint}
+                                className="aspect-video object-cover" />
+                               <CardHeader>
+                                   <Badge variant="secondary" className="w-fit">{post.category}</Badge>
+                                   <CardTitle className="mt-2 text-xl">{post.title}</CardTitle>
+                               </CardHeader>
+                               <CardContent className="flex-grow">
+                                   <p className="text-muted-foreground">{post.excerpt}</p>
+                               </CardContent>
+                               <CardFooter className="flex items-center gap-4 pt-4">
+                                    <Avatar>
+                                        <AvatarImage src={post.avatar} alt={post.author} data-ai-hint="person avatar"/>
+                                        <AvatarFallback>{post.author.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <p className="font-semibold">{post.author}</p>
+                                        <p className="text-sm text-muted-foreground">Staff Writer</p>
+                                    </div>
+                               </CardFooter>
+                            </Card>
+                        </Link>
                     ))}
                 </div>
                  <div className="mt-12 text-center">
                     <Button variant="outline" asChild>
-                        <Link href="#">
+                        <Link href="/blog">
                             Read More Articles <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                     </Button>
