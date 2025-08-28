@@ -127,7 +127,7 @@ export function Databases() {
                                 <DialogDescription>
                                    This will permanently delete the database {db.name} and its user.
                                 </DialogDescription>
-                            </Header>
+                            </DialogHeader>
                             <DialogFooter>
                                 <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
                                 <DialogClose asChild><Button variant="destructive" onClick={handleDeleteDb}>Delete</Button></DialogClose>
