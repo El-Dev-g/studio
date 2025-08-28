@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -114,7 +115,7 @@ export function Databases() {
                   <TableCell>{db.user}</TableCell>
                   <TableCell>{db.size}</TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button variant="outline">phpMyAdmin</Button>
+                    <Button variant="outline" disabled>phpMyAdmin</Button>
                     <Button variant="outline" size="icon" disabled><Edit className="h-4 w-4"/></Button>
                     <Dialog onOpenChange={(open) => !open && setDbToDelete(null)}>
                         <DialogTrigger asChild>
@@ -126,7 +127,7 @@ export function Databases() {
                                 <DialogDescription>
                                    This will permanently delete the database {db.name} and its user.
                                 </DialogDescription>
-                            </DialogHeader>
+                            </Header>
                             <DialogFooter>
                                 <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
                                 <DialogClose asChild><Button variant="destructive" onClick={handleDeleteDb}>Delete</Button></DialogClose>
