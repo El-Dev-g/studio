@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Shield, PlusCircle } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const initialCertificates = [
@@ -50,7 +50,7 @@ export default function SslManagementPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">SSL/TLS Management</h1>
-          <p className="text-muted-foreground">Secure your domains with SSL certificates.</p>
+          <p className="text-muted-foreground">Install and manage custom SSL certificates.</p>
         </div>
          <Dialog>
             <DialogTrigger asChild>
@@ -58,7 +58,7 @@ export default function SslManagementPage() {
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Install SSL Certificate</DialogTitle>
+                    <DialogTitle>Install Custom SSL Certificate</DialogTitle>
                     <DialogDescription>
                         Provide the domain and certificate details.
                     </DialogDescription>
@@ -120,21 +120,6 @@ export default function SslManagementPage() {
               ))}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
-       <Card>
-        <CardHeader>
-          <CardTitle>Free Let's Encrypt SSL</CardTitle>
-          <CardDescription>All our plans come with free, automatic SSL from Let's Encrypt.</CardDescription>
-        </CardHeader>
-        <CardContent className="flex items-center gap-4">
-            <div className="p-3 bg-secondary rounded-full">
-                <Shield className="h-8 w-8 text-primary" />
-            </div>
-            <div>
-                <p className="font-semibold">Automatic SSL is enabled</p>
-                <p className="text-muted-foreground">We'll automatically renew your certificates for you.</p>
-            </div>
         </CardContent>
       </Card>
     </div>
