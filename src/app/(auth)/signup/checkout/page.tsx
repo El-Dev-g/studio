@@ -12,13 +12,14 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircle } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const plans = {
-    shared: { name: "Shared Hosting", price: 9 },
-    cloud: { name: "Cloud Hosting", price: 29 },
-    vps: { name: "VPS Hosting", price: 59 },
+    shared: { name: "Shared Hosting", price: 9, description: "For personal sites & blogs" },
+    cloud: { name: "Cloud Hosting", price: 29, description: "For small businesses & pros" },
+    vps: { name: "VPS Hosting", price: 59, description: "For high-traffic websites" },
 };
 
 const addons = [
@@ -28,18 +29,28 @@ const addons = [
     { id: "email", name: "Professional Email", description: "Build trust with a custom email address for your domain.", price: 2 },
 ];
 
+type PlanId = keyof typeof plans;
 
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
-  const planId = searchParams.get('plan') as keyof typeof plans || 'cloud';
-  const selectedPlan = { ...plans[planId], id: planId };
+  const initialPlanId = searchParams.get('plan') as PlanId || 'cloud';
   
+  const [selectedPlanId, setSelectedPlanId] = useState<PlanId>(initialPlanId);
+  const selectedPlan = useMemo(() => ({ ...plans[selectedPlanId], id: selectedPlanId }), [selectedPlanId]);
+
   const [domain, setDomain] = useState<string | null>(null);
   const [domainPrice, setDomainPrice] = useState(0);
   const [searchedDomain, setSearchedDomain] = useState('');
   const [selectedAddons, setSelectedAddons] = useState<typeof addons[0][]>([]);
 
   const { toast } = useToast();
+
+  useEffect(() => {
+    const planIdFromUrl = searchParams.get('plan') as PlanId;
+    if (planIdFromUrl && plans[planIdFromUrl]) {
+        setSelectedPlanId(planIdFromUrl);
+    }
+  }, [searchParams]);
 
   const handleDomainSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,16 +102,30 @@ export default function CheckoutPage() {
         <div className="grid lg:grid-cols-2 gap-12">
             <div className="space-y-8">
                  <div>
-                    <h2 className="text-xl font-semibold mb-4">1. Your Plan</h2>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>{selectedPlan.name}</CardTitle>
-                            <CardDescription>Billed monthly. You can cancel anytime.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-4xl font-bold">${selectedPlan.price}/month</p>
-                        </CardContent>
-                    </Card>
+                    <h2 className="text-xl font-semibold mb-4">1. Choose Your Plan</h2>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                        {(Object.keys(plans) as PlanId[]).map(planId => (
+                            <Card 
+                                key={planId} 
+                                className={cn("cursor-pointer flex flex-col", selectedPlanId === planId ? "border-primary ring-2 ring-primary" : "hover:shadow-md")}
+                                onClick={() => setSelectedPlanId(planId)}
+                            >
+                                <CardHeader>
+                                    <CardTitle>{plans[planId].name}</CardTitle>
+                                    <CardDescription>{plans[planId].description}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex-grow">
+                                    <p className="text-2xl font-bold">${plans[planId].price}<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
+                                </CardContent>
+                                {selectedPlanId === planId && (
+                                    <CardFooter>
+                                        <CheckCircle className="h-5 w-5 text-primary"/>
+                                        <p className="ml-2 text-sm font-semibold text-primary">Selected</p>
+                                    </CardFooter>
+                                )}
+                            </Card>
+                        ))}
+                    </div>
                  </div>
                   <div>
                     <h2 className="text-xl font-semibold mb-4">2. Choose Your Domain</h2>
