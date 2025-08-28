@@ -5,6 +5,7 @@ import { DomainSuggester } from '@/components/domain-suggester';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle } from 'lucide-react';
+import Image from 'next/image';
 
 const plans = [
     { name: "Shared Hosting", price: "$9", period: "/month", features: ["1 Website", "50 GB SSD Storage", "Weekly Backups", "Free SSL"], popular: false },
@@ -27,17 +28,33 @@ export default function HomePage() {
         </nav>
       </header>
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-card border-b">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-40 bg-card border-b">
           <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center space-y-4 text-center">
-              <div className="space-y-2">
+            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:gap-16 items-center">
+              <div className="space-y-4">
                 <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline">
                   Modern Web Hosting Platform
                 </h1>
-                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+                <p className="max-w-[600px] text-muted-foreground md:text-xl">
                   Discover the perfect domain and launch your website with ease. Powerful tools, AI-driven suggestions, and rock-solid reliability.
                 </p>
+                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                    <Button asChild size="lg">
+                        <Link href="/signup">Get Started</Link>
+                    </Button>
+                    <Button asChild variant="outline" size="lg">
+                        <Link href="#plans">View Plans</Link>
+                    </Button>
+                </div>
               </div>
+               <Image
+                src="https://picsum.photos/1200/800"
+                width={1200}
+                height={800}
+                alt="Hero"
+                data-ai-hint="abstract technology"
+                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
+              />
             </div>
           </div>
         </section>
