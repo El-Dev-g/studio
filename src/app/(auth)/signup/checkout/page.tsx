@@ -19,6 +19,7 @@ import { DomainSuggester } from "@/components/domain-suggester";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { useAuth } from "@/hooks/use-auth";
 
 const plans = {
     shared: { name: "Shared Hosting", price: 9, description: "For personal sites & blogs" },
@@ -38,6 +39,7 @@ type PlanId = keyof typeof plans;
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { user, loading } = useAuth();
   const initialPlanId = searchParams.get('plan') as PlanId || 'cloud';
   const initialDomain = searchParams.get('domain');
   const { toast } = useToast();
@@ -55,6 +57,12 @@ export default function CheckoutPage() {
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, loading, router]);
 
 
   useEffect(() => {
@@ -130,6 +138,14 @@ export default function CheckoutPage() {
           setIsLoading(false);
       }
   };
+
+  if (loading || user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
 
   return (
@@ -331,3 +347,4 @@ export default function CheckoutPage() {
         </div>
     </div>
   );
+}
