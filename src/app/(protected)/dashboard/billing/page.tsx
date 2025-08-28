@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -5,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CreditCard, Download } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 const invoices = [
     { id: "INV-1234", date: "2024-06-15", amount: "$29.00", status: "Paid" },
@@ -16,6 +18,16 @@ const invoices = [
 ];
 
 export default function BillingPage() {
+    const { toast } = useToast();
+
+    const handlePaymentUpdate = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        toast({
+            title: "Success!",
+            description: "Your payment method has been updated.",
+        });
+    };
+
     return (
         <div className="space-y-8">
             <div>
@@ -49,25 +61,29 @@ export default function BillingPage() {
                                     Enter your new card details.
                                 </DialogDescription>
                             </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="card-number">Card Number</Label>
-                                    <Input id="card-number" placeholder="**** **** **** 1234" />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
+                            <form onSubmit={handlePaymentUpdate}>
+                                <div className="grid gap-4 py-4">
                                     <div className="grid gap-2">
-                                        <Label htmlFor="expiry">Expiry</Label>
-                                        <Input id="expiry" placeholder="MM/YY" />
+                                        <Label htmlFor="card-number">Card Number</Label>
+                                        <Input id="card-number" placeholder="**** **** **** 1234" />
                                     </div>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="cvc">CVC</Label>
-                                        <Input id="cvc" placeholder="123" />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="expiry">Expiry</Label>
+                                            <Input id="expiry" placeholder="MM/YY" />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="cvc">CVC</Label>
+                                            <Input id="cvc" placeholder="123" />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <DialogFooter>
-                                <Button type="submit">Save changes</Button>
-                            </DialogFooter>
+                                <DialogFooter>
+                                    <DialogClose asChild>
+                                        <Button type="submit">Save changes</Button>
+                                    </DialogClose>
+                                </DialogFooter>
+                            </form>
                         </DialogContent>
                     </Dialog>
                 </CardFooter>
