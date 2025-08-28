@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Globe, Server, CreditCard } from "lucide-react";
+import { Globe, Server, CreditCard, ShieldCheck } from "lucide-react";
 
 export default function DashboardPage() {
   return (
@@ -14,8 +14,10 @@ export default function DashboardPage() {
             <Server className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1 Active</div>
-            <p className="text-xs text-muted-foreground">Shared Hosting Plan</p>
+            <div className="text-2xl font-bold">Cloud Hosting</div>
+            <p className="text-xs text-muted-foreground">
+              Addons: DDoS Protection, Daily Backups, Premium SSL, Pro Email
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -24,8 +26,8 @@ export default function DashboardPage() {
             <Globe className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2 Domains</div>
-            <p className="text-xs text-muted-foreground">+1 expiring soon</p>
+            <div className="text-2xl font-bold">1 Domain</div>
+            <p className="text-xs text-muted-foreground">mydomain.com</p>
           </CardContent>
         </Card>
         <Card>
@@ -34,8 +36,8 @@ export default function DashboardPage() {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$29.00</div>
-            <p className="text-xs text-muted-foreground">Next invoice on July 30</p>
+            <div className="text-2xl font-bold">$57.00</div>
+            <p className="text-xs text-muted-foreground">Next invoice on August 20</p>
           </CardContent>
         </Card>
       </div>
@@ -49,13 +51,18 @@ export default function DashboardPage() {
           <ul className="space-y-4">
             <li className="flex items-center gap-4">
               <div className="p-2 bg-secondary rounded-full"><Globe className="h-4 w-4 text-muted-foreground" /></div>
-              <p className="text-sm">Domain <span className="font-semibold">example.com</span> was successfully connected.</p>
+              <p className="text-sm">Domain <span className="font-semibold">mydomain.com</span> was successfully connected.</p>
+              <span className="ml-auto text-xs text-muted-foreground">2 hours ago</span>
+            </li>
+             <li className="flex items-center gap-4">
+              <div className="p-2 bg-secondary rounded-full"><ShieldCheck className="h-4 w-4 text-muted-foreground" /></div>
+              <p className="text-sm">Addons were purchased for your hosting plan.</p>
               <span className="ml-auto text-xs text-muted-foreground">2 hours ago</span>
             </li>
             <li className="flex items-center gap-4">
               <div className="p-2 bg-secondary rounded-full"><CreditCard className="h-4 w-4 text-muted-foreground" /></div>
-              <p className="text-sm">Invoice <span className="font-semibold">#INV-1234</span> for $29.00 was paid.</p>
-              <span className="ml-auto text-xs text-muted-foreground">1 day ago</span>
+              <p className="text-sm">Invoice <span className="font-semibold">#INV-001</span> for $57.00 was paid.</p>
+              <span className="ml-auto text-xs text-muted-foreground">2 hours ago</span>
             </li>
              <li className="flex items-center gap-4">
               <div className="p-2 bg-secondary rounded-full"><Server className="h-4 w-4 text-muted-foreground" /></div>
