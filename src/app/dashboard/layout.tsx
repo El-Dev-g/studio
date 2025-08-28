@@ -26,7 +26,7 @@ export default function DashboardLayout({
         </SidebarContent>
       </Sidebar>
       <SidebarInset>
-        <header className="flex h-16 items-center justify-between border-b bg-background px-4 md:px-6 sticky top-0 z-10">
+        <header className="flex h-16 items-center justify-between border-b bg-background px-4 md:px-6 sticky top-0 z-20">
           <SidebarTrigger className="md:hidden" />
           <div className="ml-auto">
             <UserNav />
