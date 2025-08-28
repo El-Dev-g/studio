@@ -18,8 +18,9 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <Sidebar>
-        <SidebarHeader>
+        <SidebarHeader className="flex items-center justify-between">
           <Logo />
+          <SidebarTrigger className="hidden md:flex" />
         </SidebarHeader>
         <SidebarContent>
           <DashboardNav />
