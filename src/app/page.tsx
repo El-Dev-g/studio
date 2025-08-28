@@ -72,7 +72,9 @@ export default function HomePage() {
                             </ul>
                         </CardContent>
                         <CardFooter>
-                            <Button className="w-full" variant={plan.popular ? "default" : "outline"}>Choose Plan</Button>
+                            <Button className="w-full" variant={plan.popular ? "default" : "outline"} asChild>
+                              <Link href="/signup">Choose Plan</Link>
+                            </Button>
                         </CardFooter>
                     </Card>
                 ))}
