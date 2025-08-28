@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { LoaderCircle, Wand2, ArrowRight, CheckCircle, Info, Rocket, ShieldCheck, Zap } from "lucide-react";
+import { LoaderCircle, Wand2, ArrowRight, CheckCircle, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { generateWebsiteAction } from "@/app/actions";
 import type { GenerateWebsiteOutput } from "@/ai/flows/generate-website";
