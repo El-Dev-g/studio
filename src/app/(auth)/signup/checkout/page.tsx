@@ -116,10 +116,16 @@ export default function CheckoutPage() {
           await createUserWithEmailAndPassword(auth, email, password);
           router.push('/signup/verify-email');
       } catch (error: any) {
+          let description = "An unexpected error occurred. Please try again.";
+          if (error.code === 'auth/email-already-in-use') {
+              description = "This email is already in use. Please login or use a different email.";
+          } else if (error.message) {
+              description = error.message;
+          }
           toast({
               variant: "destructive",
               title: "Signup Failed",
-              description: error.message,
+              description: description,
           });
       } finally {
           setIsLoading(false);
