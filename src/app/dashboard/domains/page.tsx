@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusCircle } from "lucide-react";
+import Link from "next/link";
 
 export default function DomainsPage() {
   const domains = [
@@ -46,7 +47,9 @@ export default function DomainsPage() {
                   <TableCell>{domain.expiry}</TableCell>
                   <TableCell>{domain.records}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="outline" size="sm">Manage DNS</Button>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href={`/dashboard/domains/${domain.name}`}>Manage DNS</Link>
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
