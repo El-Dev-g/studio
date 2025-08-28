@@ -24,6 +24,8 @@ const plans = {
 const addons = [
     { id: "ddos", name: "Enhanced DDoS Protection", description: "Advanced, always-on protection against network attacks.", price: 5 },
     { id: "backups", name: "Daily Cloud Backups", description: "Peace of mind with automated daily off-site backups.", price: 3 },
+    { id: "ssl", name: "Premium Wildcard SSL", description: "Secure your main domain and all subdomains with one certificate.", price: 8 },
+    { id: "email", name: "Professional Email", description: "Build trust with a custom email address for your domain.", price: 2 },
 ];
 
 
