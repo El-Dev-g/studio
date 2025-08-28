@@ -6,6 +6,8 @@ import { generateWebsite } from '@/ai/flows/generate-website';
 import type { GenerateWebsiteOutput } from '@/ai/flows/generate-website';
 import { editWebsite } from '@/ai/flows/edit-website';
 import type { EditWebsiteInput, EditWebsiteOutput } from '@/ai/flows/edit-website';
+import { generateBlogPost } from '@/ai/flows/generate-blog-post';
+import type { GenerateBlogPostOutput } from '@/ai/flows/generate-blog-post';
 
 
 export async function getDomainSuggestions(
@@ -57,5 +59,21 @@ export async function editWebsiteAction(
   } catch (e) {
     console.error(e);
     return { error: 'Failed to edit website. Please try again later.' };
+  }
+}
+
+export async function generateBlogPostAction(
+  topic: string
+): Promise<GenerateBlogPostOutput | { error: string }> {
+  if (!topic || topic.trim().length < 5) {
+    return { error: 'Please provide a more detailed topic.' };
+  }
+
+  try {
+    const result = await generateBlogPost({ topic });
+    return result;
+  } catch (e) {
+    console.error(e);
+    return { error: 'Failed to generate blog post. Please try again later.' };
   }
 }
