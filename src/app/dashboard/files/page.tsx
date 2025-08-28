@@ -21,7 +21,7 @@ export default function FileManagerPage() {
         <TabsList>
           <TabsTrigger value="manager"><File className="mr-2 h-4 w-4" /> File Manager</TabsTrigger>
           <TabsTrigger value="ftp"><Globe className="mr-2 h-4 w-4" /> FTP Accounts</TabsTrigger>
-          <TabsTrigger value="databases"><Database className="mr-2 h-4 w-4" /> Databases</TabsTrigger>
+          <TabsTrigger value="databases"><Database className="mr-2 h-4 w-4" /> Databases (MySQL/PostgreSQL)</TabsTrigger>
         </TabsList>
         <TabsContent value="manager">
           <FileManager />

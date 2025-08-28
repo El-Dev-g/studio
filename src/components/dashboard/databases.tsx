@@ -9,16 +9,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PlusCircle, Trash2, Edit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const initialDatabases = [
-    { name: "wp_mydomain", user: "wp_user", size: "85 MB" },
-    { name: "dev_database", user: "dev_user", size: "15 MB" },
+    { name: "wp_mydomain", user: "wp_user", size: "85 MB", type: "MySQL" },
+    { name: "dev_database", user: "dev_user", size: "15 MB", type: "PostgreSQL" },
 ];
 
 type Database = {
     name: string;
     user: string;
     size: string;
+    type: "MySQL" | "PostgreSQL";
 }
 
 export function Databases() {
@@ -33,6 +35,7 @@ export function Databases() {
         name: formData.get("dbname") as string,
         user: formData.get("dbuser") as string,
         size: "0 MB",
+        type: formData.get("type") as "MySQL" | "PostgreSQL",
     };
     setDatabases([...databases, newDb]);
     toast({ title: "Success", description: "Database created successfully." });
@@ -49,8 +52,8 @@ export function Databases() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>MySQL Databases</CardTitle>
-            <CardDescription>Manage your MySQL databases and users.</CardDescription>
+            <CardTitle>Databases</CardTitle>
+            <CardDescription>Manage your MySQL & PostgreSQL databases.</CardDescription>
           </div>
           <Dialog>
             <DialogTrigger asChild>
@@ -58,10 +61,20 @@ export function Databases() {
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Create MySQL Database</DialogTitle>
+                    <DialogTitle>Create Database</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleCreateDb}>
                     <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                             <Label htmlFor="type">Database Type</Label>
+                            <Select name="type" required defaultValue="MySQL">
+                                <SelectTrigger><SelectValue/></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="MySQL">MySQL</SelectItem>
+                                    <SelectItem value="PostgreSQL">PostgreSQL</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                         <div className="grid gap-2">
                             <Label htmlFor="dbname">Database Name</Label>
                             <Input id="dbname" name="dbname" required />
@@ -87,6 +100,7 @@ export function Databases() {
             <TableHeader>
               <TableRow>
                 <TableHead>Database Name</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead>Database User</TableHead>
                 <TableHead>Size</TableHead>
                 <TableHead><span className="sr-only">Actions</span></TableHead>
@@ -96,6 +110,7 @@ export function Databases() {
               {databases.map((db) => (
                 <TableRow key={db.name}>
                   <TableCell className="font-medium">{db.name}</TableCell>
+                  <TableCell>{db.type}</TableCell>
                   <TableCell>{db.user}</TableCell>
                   <TableCell>{db.size}</TableCell>
                   <TableCell className="text-right space-x-2">
