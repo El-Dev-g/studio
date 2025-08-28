@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { LoaderCircle, Wand2, CheckCircle, PackageCheck } from "lucide-react";
+import { LoaderCircle, Wand2, CheckCircle, PackageCheck, Pencil } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { generateWebsiteAction } from "@/app/actions";
+import { generateWebsiteAction, editWebsiteAction } from "@/app/actions";
 import type { GenerateWebsiteOutput } from "@/ai/flows/generate-website";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -18,10 +18,11 @@ import { Input } from "@/components/ui/input";
 
 export default function AIWebsiteBuilderPage() {
     const [isLoading, setIsLoading] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
     const [websiteContent, setWebsiteContent] = useState<GenerateWebsiteOutput | null>(null);
     const { toast } = useToast();
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleInitialSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsLoading(true);
         setWebsiteContent(null);
@@ -43,6 +44,35 @@ export default function AIWebsiteBuilderPage() {
         
         setIsLoading(false);
     };
+
+    const handleEditSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (!websiteContent) return;
+
+        setIsEditing(true);
+        
+        const formData = new FormData(event.currentTarget);
+        const instruction = formData.get('instruction') as string;
+
+        const result = await editWebsiteAction({ currentFiles: websiteContent.files, instruction });
+        
+        if ('error' in result) {
+            toast({
+                variant: "destructive",
+                title: "An error occurred",
+                description: result.error,
+            });
+        } else {
+            setWebsiteContent(result);
+            toast({
+                title: "Website Updated!",
+                description: "Your changes have been applied to the preview.",
+            });
+        }
+        
+        setIsEditing(false);
+    };
+
 
     const handlePublish = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -160,7 +190,7 @@ export default function AIWebsiteBuilderPage() {
                     </CardDescription>
                 </CardHeader>
                 {!websiteContent && (
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleInitialSubmit}>
                         <CardContent>
                         <div className="grid w-full gap-2">
                             <Label htmlFor="description" className="font-semibold">Website Description</Label>
@@ -192,20 +222,20 @@ export default function AIWebsiteBuilderPage() {
                         </CardFooter>
                     </form>
                 )}
-                {isLoading && (
+                {(isLoading || isEditing) && (
                     <CardContent className="flex flex-col items-center justify-center gap-4 p-8">
                         <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-                        <p className="text-muted-foreground text-lg">Our AI is building your website...</p>
+                        <p className="text-muted-foreground text-lg">{isEditing ? 'Applying your edits...' : 'Our AI is building your website...'}</p>
                         <p className="text-sm text-muted-foreground">This may take a moment.</p>
                     </CardContent>
                 )}
-                 {websiteContent && !isLoading && (
+                 {websiteContent && !isLoading && !isEditing && (
                     <CardContent>
                         <div className="rounded-lg bg-secondary p-4 flex items-center gap-4">
                             <CheckCircle className="h-8 w-8 text-primary"/>
                             <div>
                                 <h3 className="text-lg font-semibold">Your website preview is ready!</h3>
-                                <p className="text-muted-foreground">Scroll down to see the generated website. You can edit the description and regenerate if needed.</p>
+                                <p className="text-muted-foreground">You can now edit it with instructions below or start over.</p>
                             </div>
                         </div>
                         <div className="mt-4">
@@ -218,7 +248,55 @@ export default function AIWebsiteBuilderPage() {
                 )}
             </Card>
 
-            {websiteContent && !isLoading && <Preview />}
+            {websiteContent && !isLoading && !isEditing && (
+                <>
+                <Card className="w-full max-w-4xl mx-auto">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-xl">
+                            <Pencil className="text-primary"/>
+                            Edit Your Website
+                        </CardTitle>
+                        <CardDescription>
+                            Tell the AI what you want to change. For example, "Change the theme to a dark mode style" or "Add a section about our team".
+                        </CardDescription>
+                    </CardHeader>
+                     <form onSubmit={handleEditSubmit}>
+                        <CardContent>
+                            <div className="grid w-full gap-2">
+                                <Label htmlFor="instruction" className="font-semibold">Edit Instruction</Label>
+                                <Textarea
+                                    id="instruction"
+                                    name="instruction"
+                                    placeholder="e.g., Change all the buttons to be blue."
+                                    rows={3}
+                                    required
+                                    disabled={isEditing}
+                                    className="text-base"
+                                />
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <Button type="submit" disabled={isEditing}>
+                                {isEditing ? (
+                                <>
+                                    <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                                    Applying Changes...
+                                </>
+                                ) : (
+                                <>
+                                    <Pencil className="mr-2 h-4 w-4" />
+                                    Apply Changes
+                                </>
+                                )}
+                            </Button>
+                        </CardFooter>
+                    </form>
+                </Card>
+
+                <Preview />
+                </>
+            )}
+
         </div>
     );
 }
