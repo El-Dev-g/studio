@@ -1,8 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Download } from "lucide-react";
+import { CreditCard, Download } from "lucide-react";
 
 const invoices = [
     { id: "INV-1234", date: "2024-06-15", amount: "$29.00", status: "Paid" },
@@ -18,6 +18,25 @@ export default function BillingPage() {
                 <p className="text-muted-foreground">Manage your subscription and view invoices.</p>
             </div>
             
+            <Card>
+                <CardHeader>
+                    <CardTitle>Payment Method</CardTitle>
+                    <CardDescription>Update your payment method used for all subscriptions.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center gap-4">
+                        <CreditCard className="h-8 w-8" />
+                        <div>
+                            <p className="font-semibold">Visa ending in 1234</p>
+                            <p className="text-muted-foreground">Expires 08/2026</p>
+                        </div>
+                    </div>
+                </CardContent>
+                <CardFooter>
+                    <Button variant="outline">Update Payment Method</Button>
+                </CardFooter>
+            </Card>
+
             <Card>
                 <CardHeader>
                     <CardTitle>Invoice History</CardTitle>
